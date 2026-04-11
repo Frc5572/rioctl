@@ -2,6 +2,7 @@ package sshclient
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/melbahja/goph"
@@ -52,4 +53,16 @@ func (c *Client) ListFiles(dir string) ([]string, error) {
 	}
 
 	return files, nil
+}
+
+func (c *Client) FileSize(path string) (int64, error) {
+	out, err := c.Run(fmt.Sprintf("stat -c %%s %s", path))
+	if err != nil {
+		return 0, err
+	}
+	size, err := strconv.ParseInt(strings.TrimSpace(out), 10, 64)
+	if err != nil {
+		return 0, err
+	}
+	return size, nil
 }

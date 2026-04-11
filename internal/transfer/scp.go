@@ -1,7 +1,6 @@
 package transfer
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 
@@ -12,25 +11,27 @@ import (
 func PullFiles(client *sshclient.Client, remoteBase, localBase string, files []string) error {
 	progressChan := make(chan int)
 
+	go func() {
+		for i, file := range files {
+			remotePath := filepath.Join(remoteBase, file)
+			localPath := filepath.Join(localBase, file)
+
+			if err := os.MkdirAll(filepath.Dir(localPath), 0755); err != nil {
+				// continue
+			}
+
+			// goph SCP download
+			err := client.Raw().Download(remotePath, localPath)
+			if err != nil {
+				// fmt.Printf("failed to download %s: %w", file, err)
+				// continue
+			}
+
+			progressChan <- i + 1
+		}
+	}()
 	// progress UI
-	go ui.RunProgress(len(files), progressChan)
-
-	for i, file := range files {
-		remotePath := filepath.Join(remoteBase, file)
-		localPath := filepath.Join(localBase, file)
-
-		if err := os.MkdirAll(filepath.Dir(localPath), 0755); err != nil {
-			return err
-		}
-
-		// goph SCP download
-		err := client.Raw().Download(remotePath, localPath)
-		if err != nil {
-			return fmt.Errorf("failed to download %s: %w", file, err)
-		}
-
-		progressChan <- i + 1
-	}
+	ui.RunProgress(len(files), progressChan)
 
 	close(progressChan)
 	return nil
