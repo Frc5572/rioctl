@@ -28,10 +28,14 @@ jobs:
       - name: Test with the Go CLI
         run: go test
 
+      - name: Set Short SHA
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
       - name: Build Binary
         # GOOS and GOARCH tell Go which platform to target
         run: |
-          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -o rioctl-${{ matrix.os }}-${{ matrix.arch }} .
+          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -o rioctl-${{ steps.vars.outputs.sha_short }}-${{ matrix.os }}-${{ matrix.arch }} .
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
