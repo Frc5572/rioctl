@@ -31,8 +31,6 @@ jobs:
       - name: Test with the Go CLI
         run: go test
   build:
-    needs: 
-      - lint-test
     runs-on: ubuntu-latest    
     strategy:
       matrix:
