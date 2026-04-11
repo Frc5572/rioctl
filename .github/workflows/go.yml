@@ -2,19 +2,19 @@ name: Go
 
 on: [push]
 
-
 jobs:
   build:
-    runs-on: ubuntu-latest    strategy:
-    matrix:
-      # Define target OS and Architectures
-      include:
-        - os: linux
-          arch: amd64
-        - os: windows
-          arch: amd64
-        - os: darwin
-          arch: arm64
+    runs-on: ubuntu-latest    
+    strategy:
+      matrix:
+        # Define target OS and Architectures
+        include:
+          - os: linux
+            arch: amd64
+          - os: windows
+            arch: amd64
+          - os: darwin
+            arch: arm64
     steps:
       - uses: actions/checkout@v5
       - name: Setup Go
