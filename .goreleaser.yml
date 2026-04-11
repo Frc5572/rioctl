@@ -25,7 +25,9 @@ archives:
       - rioctl
     format_overrides:
       - goos: windows
-        formats: ["zip"]
+        formats: ["zip", "binary"]
+      - goos: linux
+        formats: ["tar.gz", "binary"]
 
 checksum:
   name_template: 'checksums.txt'
