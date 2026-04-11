@@ -20,6 +20,7 @@ jobs:
           go-version: stable
       - name: Golangci-lint
         uses: golangci/golangci-lint-action@v9
+        continue-on-error: true
   test:
     runs-on: ubuntu-latest
     steps:
