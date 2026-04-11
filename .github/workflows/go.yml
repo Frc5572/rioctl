@@ -3,9 +3,8 @@ name: Go
 on:
   push:
     branches:
-      - '*'
-    tags-ignore:
-      - '*'
+      - 'main'
+  pull_request:
 
 jobs:
   build:
