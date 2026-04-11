@@ -31,7 +31,7 @@ jobs:
       - name: Build Binary
         # GOOS and GOARCH tell Go which platform to target
         run: |
-          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -o myapp-${{ matrix.os }}-${{ matrix.arch }} .
+          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -o rioctl-${{ matrix.os }}-${{ matrix.arch }} .
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
