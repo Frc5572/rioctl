@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -53,7 +54,7 @@ var formatCmd = &cobra.Command{
 		reader := bufio.NewReader(os.Stdin)
 		text, _ := reader.ReadString('\n')
 
-		if text != "yes\n" {
+		if strings.ToLower(text) != "yes\n" {
 			fmt.Println("Aborted.")
 			return nil
 		}

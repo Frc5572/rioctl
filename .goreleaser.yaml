@@ -1,4 +1,17 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+# vim: set ts=2 sw=2 tw=0 fo=jcroql
+version: 2
 builds:
   - env: [CGO_ENABLED=0]
     goos: [linux, windows, darwin]
     goarch: [amd64, arm64]
+archives:
+  - #
+    # ID of this archive.
+    #
+    # Default: 'default'.
+    id: default
+    format_overrides:
+      - # Which GOOS to override the format for.
+        goos: windows
+        formats: ["zip"] # Plural form, multiple formats. 
