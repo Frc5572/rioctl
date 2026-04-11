@@ -3,9 +3,9 @@ name: Go
 on:
   push:
     branches:
-      - '**'
+      - '*'
     tags-ignore:
-      - '**'
+      - '*'
 
 jobs:
   build:
