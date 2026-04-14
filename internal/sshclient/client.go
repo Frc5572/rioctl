@@ -2,6 +2,7 @@ package sshclient
 
 import (
 	"fmt"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -51,7 +52,7 @@ func (c *Client) ListFiles(dir string) ([]string, error) {
 		}
 		files = append(files, strings.TrimPrefix(l, dir+"/"))
 	}
-
+	slices.Reverse(files)
 	return files, nil
 }
 
