@@ -2,6 +2,8 @@ package sshclient
 
 import (
 	"fmt"
+	"rioctl/internal/utils"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -36,22 +38,23 @@ func (c *Client) Close() error {
 	return c.client.Close()
 }
 
-func (c *Client) ListFiles(dir string) ([]string, error) {
-	out, err := c.Run(fmt.Sprintf("find %s -type f -name '*.wpilog'", dir))
+func (c *Client) ListFiles(dir string) ([]utils.File, error) {
+	out, err := c.Run(fmt.Sprintf("ls -lh %s | grep .wpilog | awk '{ print $5\",\"$9 }'", dir))
 	if err != nil {
 		return nil, err
 	}
 
 	lines := strings.Split(out, "\n")
 
-	var files []string
+	var files []utils.File
 	for _, l := range lines {
 		if l == "" {
 			continue
 		}
-		files = append(files, strings.TrimPrefix(l, dir+"/"))
+		stringArr := strings.Split(l, ",")
+		files = append(files, utils.File{Name: stringArr[1], Size: stringArr[0]})
 	}
-
+	slices.Reverse(files)
 	return files, nil
 }
 

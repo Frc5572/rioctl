@@ -12,24 +12,24 @@ import (
 
 func PullFiles(client *sshclient.Client, remoteBase, localBase string, files []string) error {
 	finishedChan := make(chan int)
-	currentChan := make(chan utils.File)
+	currentChan := make(chan utils.FileUpload)
 
 	go func() {
 		for i, file := range files {
-			remotePath := filepath.Join(remoteBase, file)
+			remotePath := filepath.ToSlash(filepath.Join(remoteBase, file))
 			localPath := filepath.Join(localBase, file)
 
 			if err := os.MkdirAll(filepath.Dir(localPath), 0755); err != nil {
-				// continue
+				// fmt.Print(err)
 			}
 
 			err := os.Remove(localPath)
 			if err != nil {
-				//
+				// fmt.Print(err)
 			}
 			totalSize, err := client.FileSize(remotePath)
 			if err != nil {
-				//
+				// fmt.Print(err)
 			}
 			file := utils.NewFile(totalSize, 0, file)
 			currentChan <- file
@@ -50,8 +50,7 @@ func PullFiles(client *sshclient.Client, remoteBase, localBase string, files []s
 			// goph SCP download
 			err = client.Raw().Download(remotePath, localPath)
 			if err != nil {
-				// fmt.Printf("failed to download %s: %w", file, err)
-				// continue
+				// fmt.Print(err)
 			}
 
 			finishedChan <- i + 1
