@@ -3,6 +3,7 @@ package ui
 import (
 	"fmt"
 	"os"
+	"rioctl/internal/utils"
 
 	"charm.land/bubbles/v2/list"
 	tea "charm.land/bubbletea/v2"
@@ -15,6 +16,7 @@ var defaultDelegate = list.NewDefaultDelegate()
 
 type item struct {
 	title    string
+	size     string
 	selected bool
 }
 
@@ -26,18 +28,14 @@ func (i item) Title() string {
 	// return i.title
 }
 func (i item) Description() string {
-	// if i.selected {
-	// 	return "[x]"
-	// }
-	// return "[ ]"
-	return ""
+	return "    " + i.size
 }
 
 func (i item) FilterValue() string { return i.title }
 
 type model struct {
 	list     list.Model
-	choices  []item
+	choices  []*item
 	quitting bool
 }
 
@@ -58,6 +56,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "ctrl+c", "q":
 			m.quitting = true
+			m.choices = []*item{}
 			return m, tea.Quit
 
 		case "enter":
@@ -68,18 +67,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 
 		case "space":
-			i := m.list.Index()
-			m.choices[i].selected = !m.choices[i].selected
+			f, ok := m.list.SelectedItem().(*item)
+			if ok {
+				f.selected = !f.selected
+			}
 		}
 	case tea.WindowSizeMsg:
 		h, v := docStyle.GetFrameSize()
 		m.list.SetSize(msg.Width-h, msg.Height-v)
 	}
-	interfaces := make([]list.Item, len(m.choices))
-	for i, v := range m.choices {
-		interfaces[i] = v
-	}
-	m.list.SetItems(interfaces)
 	var cmd tea.Cmd
 	m.list, cmd = m.list.Update(msg)
 	return m, cmd
@@ -102,17 +98,17 @@ func (m model) Selected() []string {
 	return out
 }
 
-func NewFilePicker(files []string) model {
+func NewFilePicker(files []utils.File) model {
 	items := make([]list.Item, len(files))
-	choices := make([]item, len(files))
+	choices := make([]*item, len(files))
 
 	for i, f := range files {
-		it := item{title: f}
+		it := &item{title: f.Name, size: f.Size}
 		items[i] = it
 		choices[i] = it
 	}
 
-	defaultDelegate.ShowDescription = false
+	// defaultDelegate.ShowDescription = false
 	l := list.New(items, defaultDelegate, 0, 0)
 	l.Title = "Select log files (space to toggle, enter to confirm)"
 
@@ -122,7 +118,7 @@ func NewFilePicker(files []string) model {
 	}
 }
 
-func RunFilePicker(files []string) ([]string, error) {
+func RunFilePicker(files []utils.File) ([]string, error) {
 	m := NewFilePicker(files)
 
 	p := tea.NewProgram(m)

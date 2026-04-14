@@ -62,7 +62,7 @@ func (m progressModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.done = true
 			return m, tea.Quit
 		}
-	case utils.File:
+	case utils.FileUpload:
 		m.currentFileBytes = msg.Current
 		m.totalFileBytes = msg.Size
 		m.currentFile = msg.Name
@@ -94,7 +94,7 @@ func (m progressModel) View() tea.View {
 		pad + helpStyle(fmt.Sprintf("%s / %s", humanize(m.currentFileBytes), humanize((m.totalFileBytes)))))
 }
 
-func RunProgress(total int, current <-chan utils.File, finished <-chan int) {
+func RunProgress(total int, current <-chan utils.FileUpload, finished <-chan int) {
 	m := NewProgress(total)
 	p := tea.NewProgram(m)
 

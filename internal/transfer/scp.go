@@ -12,7 +12,7 @@ import (
 
 func PullFiles(client *sshclient.Client, remoteBase, localBase string, files []string) error {
 	finishedChan := make(chan int)
-	currentChan := make(chan utils.File)
+	currentChan := make(chan utils.FileUpload)
 
 	go func() {
 		for i, file := range files {

@@ -1,24 +1,18 @@
 package cmd
 
-import (
-	"rioctl/internal/ui"
+// var test2CMD = &cobra.Command{
+// 	Use:   "test2",
+// 	Short: "test operations",
+// 	Args:  cobra.ArbitraryArgs,
+// 	RunE: func(cmd *cobra.Command, args []string) error {
 
-	"github.com/spf13/cobra"
-)
+// 		allFiles := []string{"asdf", "asdf"}
+// 		_, err := ui.RunFilePicker(allFiles)
+// 		return err
+// 	},
+// }
 
-var test2CMD = &cobra.Command{
-	Use:   "test2",
-	Short: "test operations",
-	Args:  cobra.ArbitraryArgs,
-	RunE: func(cmd *cobra.Command, args []string) error {
+// func init() {
 
-		allFiles := []string{"asdf", "asdf"}
-		_, err := ui.RunFilePicker(allFiles)
-		return err
-	},
-}
-
-func init() {
-
-	rootCmd.AddCommand(test2CMD)
-}
+// 	rootCmd.AddCommand(test2CMD)
+// }
