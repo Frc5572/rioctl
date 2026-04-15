@@ -17,7 +17,7 @@ var logsCmd = &cobra.Command{
 	Use:   "logs",
 	Short: "Log operations",
 }
-
+var defaultSource = "/media/sda1"
 var logsPullCmd = &cobra.Command{
 	Use:   "pull [files...]",
 	Short: "Pull logs from RoboRIO",
@@ -32,13 +32,13 @@ var logsPullCmd = &cobra.Command{
 		source, _ := cmd.Flags().GetString("source")
 		// If no dir provided → prompt
 		if source == "" {
-			input, err := ui.RunTextInput("/media/sda1")
+			input, err := ui.RunTextInput(defaultSource)
 			if err != nil {
 				return err
 			}
 
 			if input == "" {
-				source = "/media/sda1"
+				source = defaultSource
 			} else {
 				source = input
 			}
@@ -113,7 +113,7 @@ var logsPullCmd = &cobra.Command{
 }
 
 func init() {
-	logsPullCmd.Flags().String("source", "/media/sda1", "Source directory")
+	logsPullCmd.Flags().String("source", "", "Source directory")
 	logsPullCmd.Flags().String("dest", "./logs", "Destination directory")
 	logsPullCmd.Flags().String("event", "", "Event Code to download Event only logs")
 	logsPullCmd.Flags().Bool("practice", false, "Pull Practice Match Logs")

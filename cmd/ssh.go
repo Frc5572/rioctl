@@ -20,9 +20,18 @@ func getSSHClient(cmd *cobra.Command) (*sshclient.Client, error) {
 		return nil, fmt.Errorf("team number is required")
 	}
 
-	host := teamToIP(team)
-
-	fmt.Printf("Connecting to %s as %s...\n", host, user)
-
-	return sshclient.New(host, user, pass)
+	hostOptions := []string{
+		teamToIP(team),
+		fmt.Sprintf("roboRIO-%d-FRC.local", team),
+		"172.22.11.2",
+	}
+	for _, host := range hostOptions {
+		fmt.Printf("Connecting to %s as %s...\n", host, user)
+		client, err := sshclient.New(host, user, pass)
+		if err == nil {
+			return client, nil
+		}
+		fmt.Printf("Connection to %s failed\n", host)
+	}
+	return nil, fmt.Errorf("Could not connect to RoboRio on any IP/Hostname")
 }
