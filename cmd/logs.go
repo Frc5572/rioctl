@@ -1,10 +1,14 @@
 package cmd
 
 import (
+	"bufio"
 	"fmt"
+	"os"
+	"strings"
 
 	"rioctl/internal/transfer"
 	"rioctl/internal/ui"
+	"rioctl/internal/utils"
 
 	"github.com/spf13/cobra"
 )
@@ -41,6 +45,10 @@ var logsPullCmd = &cobra.Command{
 		}
 
 		dest, _ := cmd.Flags().GetString("dest")
+		eventCode, _ := cmd.Flags().GetString("event")
+		practice, _ := cmd.Flags().GetBool("practice")
+		qual, _ := cmd.Flags().GetBool("qual")
+		elim, _ := cmd.Flags().GetBool("elim")
 
 		var files []string
 
@@ -49,19 +57,54 @@ var logsPullCmd = &cobra.Command{
 			files = args
 		} else {
 			fmt.Println("Fetching file list...")
-
 			allFiles, err := client.ListFiles(source)
 			if err != nil {
 				return err
 			}
+			if eventCode != "" || practice || qual || elim {
+				allFiles, err := client.ListFiles(source)
+				if err != nil {
+					return err
+				}
+				var totalSize int64
+				for _, file := range allFiles {
+					if eventCode != "" && file.Event != eventCode {
+						continue
+					}
+					if !practice && !elim && !qual {
+						files = append(files, file.Name)
+						totalSize += file.Size
+					} else if practice && file.MatchType == "p" {
+						files = append(files, file.Name)
+						totalSize += file.Size
+					} else if qual && file.MatchType == "q" {
+						files = append(files, file.Name)
+						totalSize += file.Size
+					} else if elim && file.MatchType == "e" {
+						files = append(files, file.Name)
+						totalSize += file.Size
+					}
+				}
 
-			// Launch TUI selector
-			selected, err := ui.RunFilePicker(allFiles)
-			if err != nil {
-				return err
+				fmt.Printf("⚠️ This will pull %d files (%s). Continue? (yes/no): ", len(files), utils.Humanize(totalSize))
+
+				reader := bufio.NewReader(os.Stdin)
+				text, _ := reader.ReadString('\n')
+
+				if strings.ToLower(text) != "yes\n" {
+					fmt.Println("Aborted.")
+					return nil
+				}
+
+			} else {
+				// Launch TUI selector
+				selected, err := ui.RunFilePicker(allFiles)
+				if err != nil {
+					return err
+				}
+
+				files = selected
 			}
-
-			files = selected
 		}
 
 		fmt.Println("Downloading selected files...")
@@ -72,6 +115,10 @@ var logsPullCmd = &cobra.Command{
 func init() {
 	logsPullCmd.Flags().String("source", "/media/sda1", "Source directory")
 	logsPullCmd.Flags().String("dest", "./logs", "Destination directory")
+	logsPullCmd.Flags().String("event", "", "Event Code to download Event only logs")
+	logsPullCmd.Flags().Bool("practice", false, "Pull Practice Match Logs")
+	logsPullCmd.Flags().Bool("qual", false, "Pull Qual Match Logs")
+	logsPullCmd.Flags().Bool("elim", false, "Pull Elim Match Logs")
 
 	logsCmd.AddCommand(logsPullCmd)
 	rootCmd.AddCommand(logsCmd)

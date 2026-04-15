@@ -91,7 +91,7 @@ func (m progressModel) View() tea.View {
 	return tea.NewView("\n\n" + a +
 		fmt.Sprintf("Downloading %s (%d/%d)", m.currentFile, m.finished+1, m.total) + "\n\n" +
 		m.progress.ViewAs(current) + "\n\n" +
-		pad + helpStyle(fmt.Sprintf("%s / %s", humanize(m.currentFileBytes), humanize((m.totalFileBytes)))))
+		pad + helpStyle(fmt.Sprintf("%s / %s", utils.Humanize(m.currentFileBytes), utils.Humanize((m.totalFileBytes)))))
 }
 
 func RunProgress(total int, current <-chan utils.FileUpload, finished <-chan int) {
@@ -123,8 +123,4 @@ func RunProgress1(total int, stuff []string) {
 	}()
 
 	p.Run()
-}
-
-func humanize(b int64) string {
-	return fmt.Sprintf("%.2f MB", float64(b)/1024/1024)
 }
