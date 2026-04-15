@@ -2,6 +2,7 @@ package sshclient
 
 import (
 	"fmt"
+	"regexp"
 	"rioctl/internal/utils"
 	"slices"
 	"strconv"
@@ -9,6 +10,8 @@ import (
 
 	"github.com/melbahja/goph"
 )
+
+var fileRE = regexp.MustCompile(`^akit_.*_(\w+)_([peq])\d+\.wpilog$`)
 
 type Client struct {
 	client *goph.Client
@@ -39,7 +42,7 @@ func (c *Client) Close() error {
 }
 
 func (c *Client) ListFiles(dir string) ([]utils.File, error) {
-	out, err := c.Run(fmt.Sprintf("ls -lh %s | grep .wpilog | awk '{ print $5\",\"$9 }'", dir))
+	out, err := c.Run(fmt.Sprintf("ls -l %s | grep .wpilog | awk '{ print $5\",\"$9 }'", dir))
 	if err != nil {
 		return nil, err
 	}
@@ -51,8 +54,22 @@ func (c *Client) ListFiles(dir string) ([]utils.File, error) {
 		if l == "" {
 			continue
 		}
+		eventCode := ""
+		matchType := ""
 		stringArr := strings.Split(l, ",")
-		files = append(files, utils.File{Name: stringArr[1], Size: stringArr[0]})
+		name := stringArr[1]
+
+		size, err := strconv.ParseInt(strings.TrimSpace(stringArr[0]), 10, 64)
+		if err != nil {
+			continue
+		}
+		if fileRE.MatchString(name) {
+			matches := fileRE.FindStringSubmatch(name)
+			eventCode = matches[1]
+			matchType = matches[2]
+		}
+
+		files = append(files, utils.File{Name: name, Size: size, Event: eventCode, MatchType: matchType})
 	}
 	slices.Reverse(files)
 	return files, nil

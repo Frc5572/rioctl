@@ -79,20 +79,12 @@ var formatCmd = &cobra.Command{
 		}
 		fmt.Println(out)
 
-		mountCmdStr := fmt.Sprintf("mount %s /media/sda1", device)
-		out, err = client.Run(mountCmdStr)
+		out, err = client.Run("reboot")
 		if err != nil {
 			return err
 		}
 		fmt.Println(out)
 
-		out, err = client.Run("RESTART=yes /usr/local/frc/bin/frcKillRobot.sh")
-		if err != nil {
-			return err
-		}
-		fmt.Println(out)
-
-		fmt.Println(out)
 		return nil
 	},
 }

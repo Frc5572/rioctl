@@ -103,7 +103,7 @@ func NewFilePicker(files []utils.File) model {
 	choices := make([]*item, len(files))
 
 	for i, f := range files {
-		it := &item{title: f.Name, size: f.Size}
+		it := &item{title: f.Name, size: f.HumanizedSize()}
 		items[i] = it
 		choices[i] = it
 	}
