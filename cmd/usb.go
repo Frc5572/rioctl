@@ -79,8 +79,7 @@ var formatCmd = &cobra.Command{
 		}
 		fmt.Println(out)
 
-		rebootCmdStr := fmt.Sprint("reboot")
-		out, err = client.Run(rebootCmdStr)
+		out, err = client.Run("reboot")
 		if err != nil {
 			return err
 		}

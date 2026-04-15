@@ -111,16 +111,3 @@ func RunProgress(total int, current <-chan utils.FileUpload, finished <-chan int
 
 	p.Run()
 }
-
-func RunProgress1(total int, stuff []string) {
-	m := NewProgress(total)
-	p := tea.NewProgram(m)
-
-	go func() {
-		for u := range stuff {
-			p.Send(u)
-		}
-	}()
-
-	p.Run()
-}
