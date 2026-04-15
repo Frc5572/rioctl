@@ -64,8 +64,8 @@ func (m progressModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	case utils.FileUpload:
 		m.currentFileBytes = msg.Current
-		m.totalFileBytes = msg.Size
-		m.currentFile = msg.Name
+		m.totalFileBytes = msg.File.Size
+		m.currentFile = msg.File.Name
 		if m.currentFileBytes >= m.totalFileBytes {
 			m.completedFiles = append(m.completedFiles, m.currentFile)
 		}

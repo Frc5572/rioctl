@@ -3,9 +3,10 @@ package utils
 import "fmt"
 
 type FileUpload struct {
-	Size    int64
+	File File
+	// Size    int64
 	Current int64
-	Name    string
+	// Name    string
 }
 
 func (m FileUpload) UpdateCurrent(current int64) FileUpload {
@@ -15,9 +16,11 @@ func (m FileUpload) UpdateCurrent(current int64) FileUpload {
 
 func NewFile(size int64, current int64, name string) FileUpload {
 	return FileUpload{
-		Name:    name,
+		File: File{
+			Name: name,
+			Size: size,
+		},
 		Current: current,
-		Size:    size,
 	}
 }
 
@@ -26,6 +29,10 @@ type File struct {
 	Name      string
 	Event     string
 	MatchType string
+}
+
+func (f File) HumanizedSize() string {
+	return Humanize(f.Size)
 }
 
 func Humanize(b int64) string {
