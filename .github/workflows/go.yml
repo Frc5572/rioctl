@@ -57,6 +57,15 @@ jobs:
         run: |
           go get .
 
+      - name: Create embedded Google OAuth credentials
+        env:
+          GOOGLE_OAUTH_CREDENTIALS_JSON: ${{ secrets.GOOGLE_OAUTH_CREDENTIALS_JSON }}
+        run: |
+          test -n "$GOOGLE_OAUTH_CREDENTIALS_JSON"
+          mkdir -p internal/googledrive
+          printf '%s' "$GOOGLE_OAUTH_CREDENTIALS_JSON" > internal/googledrive/credentials.json
+          chmod 600 internal/googledrive/credentials.json
+
       - name: Set Short SHA
         id: vars
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
