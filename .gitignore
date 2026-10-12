@@ -33,3 +33,4 @@ go.work.sum
 rioctl
 *.exe
 *.wpilog
+internal/googledrive/credentials.json
